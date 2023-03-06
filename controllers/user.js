@@ -4,7 +4,11 @@ module.exports.getUser = (req, res) => {
   const { userId } = req.params;
   if (userId.length === 24) {
     User.findById(userId)
-      .then((user) => res.send(user))
+      .then((user) => {
+        if (!user) {
+          return res.status(404).send({ message: "Пользователь не найден" });
+        } else return res.send({ data: user });
+      })
       .catch((err) => {
         if (err.name === "CastError") {
           return res

@@ -8,7 +8,11 @@ module.exports.deleteCard = (req, res) => {
       runValidators: true,
       upsert: true,
     })
-      .then((card) => res.send(card))
+      .then((card) => {
+        if (!card) {
+          return res.status(404).send({ message: "Карточка не найдена" });
+        } else return res.send({ data: user });
+      })
       .catch((err) => {
         if (err.name === "CastError") {
           return res.status(404).send({ message: "Нет такой карточки" });
@@ -50,7 +54,11 @@ module.exports.likeCard = (req, res) => {
       { new: true },
       { runValidators: true }
     )
-      .then((card) => res.send(card))
+      .then((card) => {
+        if (!card) {
+          return res.status(404).send({ message: "Карточка не найдена" });
+        } else return res.send({ data: user });
+      })
       .catch((err) => {
         if (err.name === "CastError") {
           return res.status(404).send({ message: "Нет такой карточки" });
@@ -70,7 +78,11 @@ module.exports.dislikeCard = (req, res) => {
       { new: true },
       { new: true, runValidators: true, upsert: true }
     )
-      .then((card) => res.send(card))
+      .then((card) => {
+        if (!card) {
+          return res.status(404).send({ message: "Карточка не найдена" });
+        } else return res.send({ data: user });
+      })
       .catch((err) => {
         if (err.name === "CastError") {
           return res.status(404).send({ message: "Нет такой карточки" });
