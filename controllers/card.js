@@ -2,8 +2,12 @@ const Card = require('../models/card');
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
-    .then((card) => res.send({ data: card }))
+  Card.findByIdAndRemove(cardId, {
+    new: true,
+    runValidators: true,
+    upsert: true,
+  })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(404).send({ message: 'Нет такой карточки' });
@@ -40,15 +44,17 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
+    { runValidators: true },
   )
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Ошибка валидации' });
-      }
       if (err.name === 'CastError') {
         return res.status(404).send({ message: 'Нет такой карточки' });
       }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Ошибка валидации' });
+      }
+
       return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
@@ -58,6 +64,7 @@ module.exports.dislikeCard = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
+    { new: true, runValidators: true, upsert: true },
   )
     .then((card) => res.send(card))
     .catch((err) => {
