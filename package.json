@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production node server",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "lint": "npx eslint"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,11 @@
     "mongoose": "^7.0.0"
   },
   "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin": "^1.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "import": "^0.0.6",
     "nodemon": "^2.0.20"
   }
 }
