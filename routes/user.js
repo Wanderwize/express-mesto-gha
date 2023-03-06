@@ -5,7 +5,7 @@ const {
   getUsers,
   updateProfile,
   updateAvatar,
-  errorPage
+  errorPage,
 } = require('../controllers/user');
 const { createUser } = require('../controllers/user');
 

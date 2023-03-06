@@ -15,7 +15,7 @@ module.exports.deleteCard = (req, res) => {
         }
         return res.status(500).send({ message: "На сервере произошла ошибка" });
       });
-  } else return res.status(400).send({ message: "ворк" });
+  } else return res.status(400).send({ message: "Некорректный формат данных" });
 };
 
 module.exports.createCard = (req, res) => {
