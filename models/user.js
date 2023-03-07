@@ -20,4 +20,9 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.path('avatar').validate((avatar) => {
+  const urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+  return urlRegex.test(avatar);
+}, 'Ошибка валидации');
+
 module.exports = mongoose.model('user', userSchema);

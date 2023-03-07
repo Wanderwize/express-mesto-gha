@@ -7,14 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Wanderwize/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Semenenko Alexandr",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Wanderwize/express-mesto-gha/issues"
@@ -24,7 +24,8 @@
     "body-parser": "^1.20.2",
     "celebrate": "^15.0.1",
     "express": "^4.18.2",
-    "mongoose": "^7.0.0"
+    "mongoose": "^7.0.0",
+    "mongoose-type-url": "^2.1.0"
   },
   "devDependencies": {
     "eslint": "^8.35.0",

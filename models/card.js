@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const cardsSchema = new mongoose.Schema({
   name: {
@@ -14,8 +14,7 @@ const cardsSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'user',
-
+    ref: "user",
   },
   likes: [
     {
@@ -31,4 +30,10 @@ const cardsSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model('card', cardsSchema);
+cardsSchema.path("link").validate((link) => {
+  const urlRegex =
+    /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+  return urlRegex.test(link);
+}, "Ошибка валидации");
+
+module.exports = mongoose.model("card", cardsSchema);
