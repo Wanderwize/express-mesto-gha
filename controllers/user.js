@@ -48,10 +48,11 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const {
-    name, about, avatar, email, password,
+    name, about, avatar, email,
   } = req.body;
+
   bcrypt
-    .hash(password, 10)
+    .hash(req.body.password, 10)
     .then((hash) => User.create({
       name,
       about,
