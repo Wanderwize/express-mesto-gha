@@ -57,4 +57,9 @@ userSchema.path('avatar').validate((avatar) => {
   return urlRegex.test(avatar);
 }, 'Ошибка валидации');
 
+userSchema.path('email').validate((email) => {
+  const urlRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
+  return urlRegex.test(email);
+}, 'Ошибка валидации');
+
 module.exports = mongoose.model('user', userSchema);

@@ -6,32 +6,29 @@ const DefaultError = require('../errors/defaultError');
 const ValidationError = require('../errors/validationError');
 const AuthorizationError = require('../errors/authoriztionError');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   if (userId.length === 24) {
     User.findById(userId)
-      .then((user) => {
+      .then((user, err) => {
         if (!user) {
           throw new NotFoundError('Нет пользователя с таким id');
         }
-        return res.send({ data: user });
-      })
-      .catch((err) => {
         if (err.name === 'CastError') {
           throw new NotFoundError('Нет пользователя с таким id');
         }
         if (err.name === 'ValidationError') {
           throw new ValidationError('Ошибка валидации');
         }
-
-        throw new DefaultError('На сервере произошла ошибка');
-      });
-  } else throw new ValidationError('Некорректный формат данных');
+        return res.send({ data: user });
+      })
+      .catch(next);
+  }
 
   return console.log('test');
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch((err) => {
@@ -46,30 +43,7 @@ module.exports.getUsers = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const {
-    name, about, avatar, email,
-  } = req.body;
-
-  bcrypt
-    .hash(req.body.password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка валидации');
-      }
-      throw new DefaultError('На сервере произошла ошибка');
-    });
-};
-
-module.exports.errorPage = (req, res) => {
+module.exports.errorPage = (req, res, next) => {
   console.log(req, res);
   throw new NotFoundError('Такой страницы не существует');
 };
@@ -93,7 +67,7 @@ module.exports.updateProfile = (req, res) => {
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -113,7 +87,30 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email,
+  } = req.body;
+
+  bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      if (!user) {
+        throw new ValidationError('Ошибка валидации');
+      }
+      res.send({ data: user });
+    })
+    .catch(next);
+};
+
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)

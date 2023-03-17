@@ -32,7 +32,7 @@ app.post('/signup', createUser);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
+  res.status(500).send({ message: 'Произошла ошибка' });
 });
 
 app.listen(PORT, () => {
