@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/user');
+const { login, createUser } = require('./controllers/user');
 const cardRouter = require('./routes/card');
+// const auth = require('./middlewares/auth');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,19 +22,18 @@ mongoose.connect('mongodb://0.0.0.0:27017/mestodb', {
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6403e49f6e0097ae76646578', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-
-  next();
-});
-
 // app.use(router);
 app.use(userRouter);
 app.use(cardRouter);
 
+app.post('/signin', login);
+app.post('/signup', createUser);
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
+});
 
 app.listen(PORT, () => {
   console.log(`Слушаем ${PORT} порт`);

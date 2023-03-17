@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  if (cardId.length === 24) {
+  if (cardId.length === 24 && req.params.card.owner._id === req.user._id) {
     Card.findByIdAndRemove(cardId, {
       new: true,
       runValidators: true,
