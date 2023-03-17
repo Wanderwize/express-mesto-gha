@@ -15,19 +15,18 @@ userRouter.patch(
   '/users/me',
   auth,
   celebrate({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-    name: Joi.string().required().min(2).max(30),
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+      name: Joi.string().required().min(2).max(30),
+    }),
   }),
   updateProfile,
 );
 userRouter.patch(
   '/users/me/avatar',
   auth,
-  celebrate({
-    avatar: Joi.string().required().url(),
 
-  }),
   updateAvatar,
 );
 
