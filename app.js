@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const path = require('path');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const userRouter = require('./routes/user');
 const { login, createUser } = require('./controllers/user');
 const cardRouter = require('./routes/card');
@@ -30,6 +31,8 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: 'Произошла ошибка' });
