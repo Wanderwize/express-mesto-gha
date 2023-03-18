@@ -126,11 +126,7 @@ module.exports.createUser = (req, res, next) => {
         avatar: user.avatar,
       });
     })
-    .catch((err) => {
-      if(err.res.status === 409) {
-        res.status(409).send({ message: 'Такой пользователь существует' });
-      }
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {
