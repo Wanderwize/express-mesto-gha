@@ -127,7 +127,7 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if(err.status === "409") {
+      if(err.res.status === 409) {
         res.status(409).send({ message: 'Такой пользователь существует' });
       }
     });
