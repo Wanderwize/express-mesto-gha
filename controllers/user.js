@@ -4,7 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
 const DefaultError = require('../errors/defaultError');
 const ValidationError = require('../errors/validationError');
-const AuthorizationError = require('../errors/authoriztionError');
+// const AuthorizationError = require('../errors/authoriztionError');
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
@@ -115,9 +115,6 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new AuthorizationError('Ошибка авторизации');
-      }
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
         expiresIn: '7d',
       });
