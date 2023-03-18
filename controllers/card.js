@@ -52,7 +52,7 @@ module.exports.likeCard = (req, res) => {
   if (cardId.length === 24) {
     Card.findByIdAndUpdate(
       cardId,
-      { $addToSet: { likes: cardId } }, // добавить _id в массив, если его там нет
+      { $addToSet: { likes: cardId } }, 
       { new: true },
       { runValidators: true },
     )
