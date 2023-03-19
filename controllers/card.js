@@ -72,7 +72,9 @@ module.exports.likeCard = (req, res) => {
 
         throw new DefaultError("На сервере произошла ошибка");
       });
-  } else throw new ValidationError("Ошибка валидации");
+  } else {
+    throw new ValidationError("Ошибка валидации");
+  }
   return console.log("test");
 };
 
@@ -97,6 +99,8 @@ module.exports.dislikeCard = (req, res) => {
         }
         throw new DefaultError("На сервере произошла ошибка");
       });
-  } else throw new ValidationError("Ошибка валидации");
+  } else {
+    throw new ValidationError("Ошибка валидации");
+  }
   return console.log("test");
 };
