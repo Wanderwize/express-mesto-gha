@@ -1,32 +1,24 @@
 const Card = require("../models/card");
+const NotFoundError = require("../errors/notFoundError");
+const AuthorizationError = require("../errors/authorizationError");
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findById(cardId).then((card) => {
-    const user = req.user._id;
-    const owner = card.owner._id.toString();
 
-    if (user === owner) {
-      card
-        .remove()
-        .then((card) => {
-          if (!card) {
-            return res.status(404).send({ message: "Карточка не найдена" });
-          }
-          return res.send({ data: cardId });
-        })
-        .catch((err) => {
-          if (err.name === "CastError") {
-            return res.status(404).send({ message: "Нет такой карточки" });
-          }
-          return res
-            .status(500)
-            .send({ message: "На сервере произошла ошибка" });
-        });
-    } else
-      return res.status(400).send({ message: "Некорректный формат данных" });
-    return console.log("test");
-  });
+  Card.findById(cardId)
+    .orFail(new NotFoundError("Карточка не найдена"))
+    .then((card) => {
+      const user = req.user._id;
+      const owner = card.owner._id.toString();
+
+      if (user === owner) {
+        card.remove();
+        res.send({ message: "Карточка удалена" });
+      } else {
+        next(new AuthorizationError("ошибка авторизации"));
+      }
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res) => {
