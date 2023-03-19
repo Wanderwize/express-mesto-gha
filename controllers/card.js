@@ -60,12 +60,12 @@ module.exports.likeCard = (req, res) => {
       { runValidators: true }
     )
       .then((card) => {
-        if (!card) {
-          throw new NotFoundError("Нет такой карточки");
-        }
         return res.send({ data: cardId });
       })
       .catch((err) => {
+        if (!card) {
+          throw new NotFoundError("Нет такой карточки");
+        }
         if (err.name === "CastError") {
           throw new NotFoundError("Нет такой карточки");
         }
@@ -88,12 +88,12 @@ module.exports.dislikeCard = (req, res) => {
       { new: true, runValidators: true, upsert: true }
     )
       .then((card) => {
-        if (!card) {
-          return res.status(404).send({ message: "Карточка не найдена" });
-        }
         return res.send({ data: cardId });
       })
       .catch((err) => {
+        if (!card) {
+          return res.status(404).send({ message: "Карточка не найдена" });
+        }
         if (err.name === "CastError") {
           throw new NotFoundError("Нет такой карточки");
         }
