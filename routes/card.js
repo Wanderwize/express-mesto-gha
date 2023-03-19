@@ -11,7 +11,17 @@ const {
 
 cardRouter.get("/cards", auth, getCards);
 
-cardRouter.post("/cards", auth, createCard);
+cardRouter.post(
+  "/cards",
+  auth,
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      link: Joi.string().required(),
+    }),
+  }),
+  createCard
+);
 
 cardRouter.delete(
   "/cards/:cardId",
@@ -35,7 +45,16 @@ cardRouter.put(
   likeCard
 );
 
-cardRouter.delete("/cards/:cardId/likes", auth, dislikeCard);
+cardRouter.delete(
+  "/cards/:cardId/likes",
+  auth,
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().alphanum().length(24),
+    }),
+  }),
+  dislikeCard
+);
 
 // userRouter.get("/:userId", getUser);
 
