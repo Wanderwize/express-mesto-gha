@@ -37,7 +37,7 @@ module.exports.deleteCard = (req, res) => {
       );
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (!card) {
         return res.status(404).send({ message: "Нет карточки с таким id" });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
