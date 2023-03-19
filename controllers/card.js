@@ -3,10 +3,16 @@ const NotFoundError = require("../errors/notFoundError");
 const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
+
 module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
 
     .then((card) => {
+      return Card.deleteOne(card).then(() =>
+        res.send({ message: "Карточка удалена" })
+      );
+    })
+    .catch((err) => {
       if (!card) {
         throw new NotFoundError("Нет такой карточки");
       }
@@ -14,11 +20,6 @@ module.exports.deleteCard = (req, res) => {
         throw new AuthorizationError("Доступ ограничен");
       }
 
-      return Card.deleteOne(card).then(() =>
-        res.send({ message: "Карточка удалена" })
-      );
-    })
-    .catch((err) => {
       if (err.name === "NotFound") {
         throw new NotFoundError("Нет такой карточки");
       }
