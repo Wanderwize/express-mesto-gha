@@ -28,6 +28,9 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
 
     .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: "Нет карточки с таким id" });
+      }
       if (card.owner._id.toString() !== req.user._id) {
         return res.status(403).send({ message: "Необходима авторизация" });
       }
@@ -37,7 +40,7 @@ module.exports.deleteCard = (req, res) => {
       );
     })
     .catch((err) => {
-      if (!card) {
+      if (err.name === "NotFound") {
         return res.status(404).send({ message: "Нет карточки с таким id" });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
