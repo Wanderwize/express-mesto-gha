@@ -1,6 +1,7 @@
 const Card = require("../models/card");
 const NotFoundError = require("../errors/notFoundError");
-const AuthorizationError = require("../errors/authorizationError");
+
+const AuthorizationError = require("../errors/authoriztionError");
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
@@ -15,7 +16,7 @@ module.exports.deleteCard = (req, res, next) => {
         card.remove();
         res.send({ message: "Карточка удалена" });
       } else {
-        next(new AuthorizationError("ошибка авторизации"));
+        next(new AuthorizationError("Oшибка авторизации"));
       }
     })
     .catch(next);
