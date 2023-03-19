@@ -1,38 +1,17 @@
 const Card = require("../models/card");
-
-// module.exports.deleteCard = (req, res) => {
-//   const { cardId } = req.params;
-//   if (cardId.length === 24) {
-//     Card.findByIdAndRemove(cardId, {
-//       new: true,
-//       runValidators: true,
-//       upsert: true,
-//     })
-//       .then((card) => {
-//         if (!card) {
-//           return res.status(404).send({ message: "Карточка не найдена" });
-//         }
-//         return res.send({ data: cardId });
-//       })
-//       .catch((err) => {
-//         if (err.name === "CastError") {
-//           return res.status(404).send({ message: "Нет такой карточки" });
-//         }
-//         return res.status(500).send({ message: "На сервере произошла ошибка" });
-//       });
-//   } else return res.status(400).send({ message: "Некорректный формат данных" });
-//   return console.log("test");
-// };
-
+const NotFoundError = require("../errors/notFoundError");
+const DefaultError = require("../errors/defaultError");
+const ValidationError = require("../errors/validationError");
+const AuthorizationError = require("../errors/authoriztionError");
 module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
 
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: "Нет карточки с таким id" });
+        throw new NotFoundError("Нет такой карточки");
       }
       if (card.owner._id.toString() !== req.user._id) {
-        return res.status(403).send({ message: "Необходима авторизация" });
+        throw new AuthorizationError("Доступ ограничен");
       }
 
       return Card.deleteOne(card).then(() =>
@@ -41,21 +20,22 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "NotFound") {
-        return res.status(404).send({ message: "Нет карточки с таким id" });
+        throw new NotFoundError("Нет такой карточки");
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Ошибка валидации" });
+        next(new ValidationError("Некорректные данные при создании карточки"));
+      } else {
+        next(err);
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 
@@ -64,9 +44,9 @@ module.exports.getCards = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(404).send({ message: "Карточки отсутствуют" });
+        throw new NotFoundError("Нет такой карточки");
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
@@ -81,18 +61,18 @@ module.exports.likeCard = (req, res) => {
     )
       .then((card) => {
         if (!card) {
-          return res.status(404).send({ message: "Карточка не найдена" });
+          throw new NotFoundError("Нет такой карточки");
         }
         return res.send({ data: cardId });
       })
       .catch((err) => {
         if (err.name === "CastError") {
-          return res.status(404).send({ message: "Нет такой карточки" });
+          throw new NotFoundError("Нет такой карточки");
         }
 
-        return res.status(500).send({ message: "На сервере произошла ошибка" });
+        throw new DefaultError("На сервере произошла ошибка");
       });
-  } else return res.status(400).send({ message: "Некорректный формат данных" });
+  } else throw new ValidationError("Ошибка валидации");
   return console.log("test");
 };
 
@@ -113,10 +93,10 @@ module.exports.dislikeCard = (req, res) => {
       })
       .catch((err) => {
         if (err.name === "CastError") {
-          return res.status(404).send({ message: "Нет такой карточки" });
+          throw new NotFoundError("Нет такой карточки");
         }
-        return res.status(500).send({ message: "На сервере произошла ошибка" });
+        throw new DefaultError("На сервере произошла ошибка");
       });
-  } else return res.status(400).send({ message: "Некорректный формат данных" });
+  } else throw new ValidationError("Ошибка валидации");
   return console.log("test");
 };
