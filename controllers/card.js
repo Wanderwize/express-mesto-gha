@@ -7,11 +7,8 @@ module.exports.deleteCard = (req, res) => {
     const owner = card.owner._id.toString();
 
     if (user === owner) {
-      Card.findByIdAndRemove(cardId, {
-        new: true,
-        runValidators: true,
-        upsert: true,
-      })
+      card
+        .remove()
         .then((card) => {
           if (!card) {
             return res.status(404).send({ message: "Карточка не найдена" });
