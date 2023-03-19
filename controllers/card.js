@@ -29,14 +29,12 @@ module.exports.deleteCard = (req, res) => {
 
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id) {
-        return res.status(401).send({ message: "Необходима авторизация" });
+        return res.status(403).send({ message: "Необходима авторизация" });
       }
 
-      return Card.deleteOne(card)
-        .then(() => res.send({ message: "Карточка удалена" }))
-        .catch(() =>
-          res.status(500).send({ message: "На сервере произошла ошибка" })
-        );
+      return Card.deleteOne(card).then(() =>
+        res.send({ message: "Карточка удалена" })
+      );
     })
     .catch((err) => {
       if (err.name === "CastError") {
