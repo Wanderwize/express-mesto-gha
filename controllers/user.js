@@ -8,7 +8,18 @@ const AuthorizationError = require("../errors/authoriztionError");
 const NotUniqueError = require("../errors/NotUniqueError");
 const NotEnoughRightsError = require("../errors/NotEnoughRightsError");
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = async ({ params: { id } }, res, next) => {
+  try {
+    const user = await User.findById(id).orFail(
+      () => new NotFoundError("Пользователь не найден")
+    );
+    res.send({ data: user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.getCurrentUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
@@ -107,9 +118,6 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.code === 11000) {
-        next(new AuthorizationError("Неправильные почта или пароль"));
-      }
-      next(err);
+      next(new AuthorizationError("Неправильные почта или пароль"));
     });
 };
