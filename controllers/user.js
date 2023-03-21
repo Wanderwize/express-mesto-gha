@@ -6,6 +6,7 @@ const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
 const NotUniqueError = require("../errors/NotUniqueError");
+const NotEnoughRightsError = require("../errors/NotEnoughRightsError");
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
@@ -106,7 +107,7 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.statusCode === 401) {
+      if (err.code === 11000) {
         next(new AuthorizationError("Неправильные почта или пароль"));
       }
       next(err);
