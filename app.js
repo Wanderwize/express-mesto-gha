@@ -1,24 +1,24 @@
-const express = require("express");
+const express = require('express');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const path = require("path");
-const bodyParser = require("body-parser");
-const { errors } = require("celebrate");
-const { celebrate, Joi } = require("celebrate");
-const { errorPage } = require("./controllers/user");
-const auth = require("./middlewares/auth");
-const userRouter = require("./routes/user");
-const { login, createUser } = require("./controllers/user");
-const cardRouter = require("./routes/card");
-const errorHandler = require("./errors/errorHandler");
+const path = require('path');
+const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
+const { errorPage } = require('./controllers/user');
+const auth = require('./middlewares/auth');
+const userRouter = require('./routes/user');
+const { login, createUser } = require('./controllers/user');
+const cardRouter = require('./routes/card');
+const errorHandler = require('./errors/errorHandler');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect("mongodb://0.0.0.0:27017/mestodb", {
+mongoose.connect('mongodb://0.0.0.0:27017/mestodb', {
   useNewUrlParser: true,
 
   useUnifiedTopology: true,
@@ -29,17 +29,17 @@ app.use(userRouter);
 app.use(cardRouter);
 
 app.post(
-  "/signin",
+  '/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
       password: Joi.string().required().min(8),
     }),
   }),
-  login
+  login,
 );
 app.post(
-  "/signup",
+  '/signup',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -47,11 +47,11 @@ app.post(
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().pattern(
-        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/
+        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/,
       ),
     }),
   }),
-  createUser
+  createUser,
 );
 
 app.use(errors());
@@ -59,7 +59,7 @@ app.use(errors());
 app.use(errorHandler);
 
 app.use((req, res) => {
-  throw new NotFoundError("Страница не существует");
+  throw new NotFoundError('Страница не существует');
 });
 
 app.listen(PORT, () => {
