@@ -44,9 +44,6 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "CastError") {
-        throw new NotFoundError("Нет такой карточки");
-      }
       throw new DefaultError("На сервере произошла ошибка");
     });
 };
@@ -57,8 +54,7 @@ module.exports.likeCard = (req, res) => {
     Card.findByIdAndUpdate(
       cardId,
       { $addToSet: { likes: cardId } },
-      { new: true },
-      { runValidators: true }
+      { new: true }
     )
       .then((card) => {
         return res.send({ data: cardId });
@@ -77,12 +73,7 @@ module.exports.likeCard = (req, res) => {
 module.exports.dislikeCard = (req, res) => {
   const { cardId } = req.params;
   if (cardId.length === 24) {
-    Card.findByIdAndUpdate(
-      cardId,
-      { $pull: { likes: cardId } },
-      { new: true },
-      { new: true, runValidators: true, upsert: true }
-    )
+    Card.findByIdAndUpdate(cardId, { $pull: { likes: cardId } }, { new: true })
       .then((card) => {
         return res.send({ data: cardId });
       })

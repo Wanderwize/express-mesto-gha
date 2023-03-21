@@ -12,23 +12,21 @@ module.exports.getUser = (req, res) => {
     User.findById(userId)
       .then((user) => {
         if (!user) {
-          return res.status(404).send({ message: "Пользователь не найден" });
+          throw new NotFoundError("Нет такого пользователя");
         }
         return res.send({ data: user });
       })
       .catch((err) => {
         if (err.name === "CastError") {
-          return res
-            .status(404)
-            .send({ message: "Нет пользователя с таким id" });
+          throw new NotFoundError("Нет такого пользователя");
         }
         if (err.name === "ValidationError") {
-          return res.status(400).send({ message: "Ошибка валидации" });
+          throw new ValidationError("Ошибка валидации");
         }
 
-        return res.status(500).send({ message: "На сервере произошла ошибка" });
+        throw new DefaultError("На сервере произошла ошибка");
       });
-  } else return res.status(400).send({ message: "Некорректный формат данных" });
+  } else throw new ValidationError("Ошибка валидации");
 
   return console.log("test");
 };
@@ -37,14 +35,11 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
     .catch((err) => {
-      if (err.status === "CastError") {
-        return res.status(400).send({ message: "Пользователи отсутствуют" });
-      }
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Ошибка валидации" });
+        throw new ValidationError("Ошибка валидации");
       }
 
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
@@ -54,14 +49,15 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Ошибка валидации" });
+        throw new ValidationError("Ошибка валидации");
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
-module.exports.errorPage = (req, res) =>
-  res.status(404).send({ message: "Такой страницы не существует" });
+module.exports.errorPage = (req, res) => {
+  throw new NotFoundError("Страница не существует");
+};
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
@@ -73,12 +69,12 @@ module.exports.updateProfile = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Ошибка валидации" });
+        throw new ValidationError("Ошибка валидации");
       }
       if (err.name === "CastError") {
-        return res.status(404).send({ message: "Нет пользователя с таким id" });
+        throw new NotFoundError("Нет такого пользователя");
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
@@ -93,12 +89,12 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Ошибка валидации" });
+        throw new ValidationError("Ошибка валидации");
       }
       if (err.name === "CastError") {
-        return res.status(404).send({ message: "Нет пользователя с таким id" });
+        throw new NotFoundError("Нет такого пользователя");
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
@@ -129,15 +125,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(400)
-          .send({ message: "Ошибка валидации данных пользователя" });
+        throw new ValidationError("Ошибка валидации");
       }
 
       if (err.code === 11000) {
-        return res
-          .status(409)
-          .send({ message: "Данный email уже зарегестрирован" });
+        throw new DefaultError("На сервере произошла ошибка");
       }
 
       return res.status(500).send({ message: "На сервере произошла ошибка" });
