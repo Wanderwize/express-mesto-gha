@@ -14,7 +14,7 @@ const { celebrate, Joi } = require("celebrate");
 const userRouter = require("./routes/user");
 const { login, createUser } = require("./controllers/user");
 const cardRouter = require("./routes/card");
-const errorHandler = require('./errors/errorHandler')
+const errorHandler = require("./errors/errorHandler");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -61,7 +61,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(errors());
 
-// app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Слушаем ${PORT} порт`);
