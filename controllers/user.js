@@ -85,10 +85,6 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        next(new ValidationError("Ошибка валидации"));
-      }
-
       if (err.code === 11000) {
         next(new DefaultError("На сервере произошла ошибка1"));
       }
@@ -97,7 +93,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -108,7 +104,5 @@ module.exports.login = (req, res) => {
         }),
       });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };
