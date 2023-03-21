@@ -3,7 +3,7 @@ const NotFoundError = require("../errors/notFoundError");
 const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
-const NotEnoughRightsError = require('../errors/NotEnoughRightsError')
+const NotEnoughRightsError = require("../errors/NotEnoughRightsError");
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
@@ -15,7 +15,7 @@ module.exports.deleteCard = (req, res, next) => {
       const owner = card.owner._id.toString();
 
       if (user === owner) {
-        Card.deleteOne(card);
+        Card.deleteOne(cardId);
         res.send({ message: "Карточка удалена" });
       } else {
         next(new NotEnoughRightsError("Недостаточно прав"));
