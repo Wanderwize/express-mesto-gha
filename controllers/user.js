@@ -105,5 +105,10 @@ module.exports.login = (req, res, next) => {
         }),
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.statusCode === 401) {
+        next(new AuthorizationError("Неправильные почта или пароль"));
+      }
+      next(err);
+    });
 };
