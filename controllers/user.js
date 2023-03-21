@@ -21,7 +21,7 @@ module.exports.getUser = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   const { userId } = req.params;
 
-  User.findById(req.session.userId)
+  User.findById(req.user._id)
     .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send(user))
     .catch(next);
