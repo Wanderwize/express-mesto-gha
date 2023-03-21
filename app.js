@@ -59,10 +59,7 @@ app.use(errors());
 app.use(errorHandler);
 
 app.use((req, res) => {
-  if (err) {
-    throw NotFoundError("Страница не найдена");
-  }
-  return res.send({ message: "123" });
+  throw NotFoundError("Страница не найдена");
 });
 
 app.listen(PORT, () => {
