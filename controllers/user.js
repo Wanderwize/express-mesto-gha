@@ -42,10 +42,6 @@ module.exports.createUser = (req, res) => {
     });
 };
 
-module.exports.errorPage = (req, res, next) => {
- throw new NotFoundError("Страница не существует");
-};
-
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -114,6 +110,10 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      next(new AuthorizationError("Неправильные почта или пароль"));
+      next(
+        new AuthorizationError(
+          `${err.statusCode} 'Неправильные почта или пароль'`
+        )
+      );
     });
 };
