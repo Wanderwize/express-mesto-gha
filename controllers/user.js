@@ -126,10 +126,10 @@ module.exports.createUser = (req, res, next) => {
       }
 
       if (err.code === 11000) {
-        next(new DefaultError("На сервере произошла ошибка"));
+        next(new DefaultError("На сервере произошла ошибка1"));
       }
 
-      next(new DefaultError("На сервере произошла ошибка"));
+      next(new DefaultError("На сервере произошла ошибка2"));
     });
 };
 
