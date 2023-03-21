@@ -3,13 +3,12 @@ const express = require("express");
 const { PORT = 3000 } = process.env;
 const app = express();
 const mongoose = require("mongoose");
-const NotFoundError = require("./errors/notFoundError");
-const path = require("path");
+
 const bodyParser = require("body-parser");
 const { errors } = require("celebrate");
 const { celebrate, Joi } = require("celebrate");
-const { errorPage } = require("./controllers/user");
-const auth = require("./middlewares/auth");
+const NotFoundError = require("./errors/notFoundError");
+
 const userRouter = require("./routes/user");
 const { login, createUser } = require("./controllers/user");
 const cardRouter = require("./routes/card");
@@ -58,10 +57,8 @@ app.use(errors());
 
 app.use(errorHandler);
 
-const errror = "ненайдина";
-
 app.use((err, req, res, next) => {
-  next(new NotFoundError("123")); 
+  next(new NotFoundError("Страница не найдена"));
 });
 
 app.listen(PORT, () => {
