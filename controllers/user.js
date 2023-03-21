@@ -113,9 +113,6 @@ module.exports.createUser = (req, res, next) => {
       })
     )
     .then((user) => {
-      if (!user) {
-        throw new ValidationError("Ошибка валидации");
-      }
       res.send({
         email: user.email,
         name: user.name,
