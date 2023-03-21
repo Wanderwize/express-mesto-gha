@@ -64,17 +64,12 @@ module.exports.likeCard = (req, res) => {
         return res.send({ data: cardId });
       })
       .catch((err) => {
-        if (!card) {
-          throw new NotFoundError("Нет такой карточки");
-        }
         if (err.name === "CastError") {
           throw new NotFoundError("Нет такой карточки");
+        } else {
+          throw new ValidationError("Ошибка валидации");
         }
-
-        throw new DefaultError("На сервере произошла ошибка");
       });
-  } else {
-    throw new ValidationError("Ошибка валидации");
   }
   return console.log("test");
 };
