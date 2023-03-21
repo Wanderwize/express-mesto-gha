@@ -6,21 +6,13 @@ const AuthorizationError = require("../errors/authoriztionError");
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-
-  Card.findById(cardId)
-    .orFail(new NotFoundError("Карточка не найдена"))
-    .then((card) => {
-      const user = req.user._id;
-      const owner = card.owner._id.toString();
-
-      if (user === owner) {
-        card.remove();
-        res.send({ message: "Карточка удалена" });
-      } else {
-        next(new AuthorizationError("Недостаточно прав"));
-      }
-    })
-    .catch(next);
+  const user = req.user._id;
+  const owner = card.owner._id.toString();
+  if (user === owner) {
+    Card.findByIdAndRemove(cardId)
+      .orFail(new NotFoundError("Карточка не найдена"))
+      .then((card) => res.send({ message: "Карточка удалена" }));
+  }
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -42,10 +34,58 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
+// module.exports.likeCard = (req, res) => {
+//   const { cardId } = req.params;
+//   if (cardId.length === 24) {
+//     Card.findByIdAndUpdate(
+//       cardId,
+//       { $addToSet: { likes: cardId } },
+//       { new: true }
+//     )
+//       .then((card) => {
+//         return res.send({ data: cardId });
+//       })
+//       .catch((err) => {
+//         if (err.name === "CastError") {
+//           throw new NotFoundError("Нет такой карточки");
+//         } else {
+//           throw new ValidationError("Ошибка валидации");
+//         }
+//       });
+//   }
+//   return console.log("test");
+// };
+
+// module.exports.dislikeCard = (req, res) => {
+//   const { cardId } = req.params;
+//   if (cardId.length === 24) {
+//     Card.findByIdAndUpdate(cardId, { $pull: { likes: cardId } }, { new: true })
+//       .then((card) => {
+//         return res.send({ data: cardId });
+//       })
+//       .catch((err) => {
+//         if (!card) {
+//           return res.status(404).send({ message: "Карточка не найдена" });
+//         }
+//         if (err.name === "CastError") {
+//           throw new NotFoundError("Нет такой карточки");
+//         }
+//         throw new DefaultError("На сервере произошла ошибка");
+//       });
+//   } else {
+//     throw new ValidationError("Ошибка валидации");
+//   }
+//   return console.log("test");
+// };
+
 module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
   if (cardId.length === 24) {
-    Card.findById(cardId, { $addToSet: { likes: cardId } }, { new: true })
+    Card.findByIdAndUpdate(
+      cardId,
+      { $addToSet: { likes: cardId } },
+      { new: true }
+    )
       .orFail(new NotFoundError("Карточка не найдена"))
       .then((card) => {
         return res.send({ data: cardId });
@@ -57,7 +97,7 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
   if (cardId.length === 24) {
-    Card.findById(cardId, { $pull: { likes: cardId } }, { new: true })
+    Card.findByIdAndUpdate(cardId, { $pull: { likes: cardId } }, { new: true })
       .orFail(new NotFoundError("Карточка не найдена"))
       .then((card) => {
         return res.send({ data: cardId });
