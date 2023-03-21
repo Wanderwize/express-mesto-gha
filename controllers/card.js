@@ -14,7 +14,7 @@ module.exports.deleteCard = (req, res, next) => {
       const owner = card.owner._id.toString();
 
       if (user === owner) {
-        Card.findByIdAndRemove(cardId);
+        Card.deleteOne(card);
         res.send({ message: "Карточка удалена" });
       } else {
         next(new AuthorizationError("Недостаточно прав"));
