@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const AuthorizationError = require('../errors/authoriztionError');
 
-const handleAuthError = (res) => {
+const handleAuthError = (next) => {
   next(new AuthorizationError('Неправильные почта или пароль'));
 };
 
