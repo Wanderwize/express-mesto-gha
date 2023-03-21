@@ -5,6 +5,7 @@ const NotFoundError = require("../errors/notFoundError");
 const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
+const NotUniqueError = require("../errors/NotUniqueError");
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
@@ -86,7 +87,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new DefaultError("На сервере произошла ошибка1"));
+        throw new NotUniqueError("Пользователь уже существует");
       }
 
       next(new DefaultError("На сервере произошла ошибка2"));
