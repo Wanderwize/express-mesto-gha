@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const NotFoundError = require("../errors/notFoundError");
 const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
