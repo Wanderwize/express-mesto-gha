@@ -8,12 +8,11 @@ const AuthorizationError = require("../errors/authoriztionError");
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
-  if (userId.length === 24) {
-    User.findById(userId)
-      .orFail(new NotFoundError("Пользователь не найден"))
-      .then((user) => res.send(user))
-      .catch(next);
-  }
+
+  User.findById(userId)
+    .orFail(new NotFoundError("Пользователь не найден"))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.getUsers = (req, res, next) => {
@@ -50,7 +49,7 @@ module.exports.updateProfile = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
