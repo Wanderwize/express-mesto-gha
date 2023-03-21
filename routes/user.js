@@ -8,6 +8,7 @@ const {
   updateProfile,
   updateAvatar,
   errorPage,
+  getCurrentUser,
 } = require("../controllers/user");
 // const { createUser } = require('../controllers/user');
 
@@ -38,7 +39,7 @@ userRouter.patch(
   updateAvatar
 );
 
-userRouter.get("/users/me", auth, getUser);
+userRouter.get("/users/me", auth, getCurrentUser);
 
 userRouter.get(
   "/users/:userId",

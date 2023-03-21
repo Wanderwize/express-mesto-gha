@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const cookieParser = require('cookie-parser');
 const NotFoundError = require("../errors/notFoundError");
 const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
@@ -8,21 +9,19 @@ const AuthorizationError = require("../errors/authoriztionError");
 const NotUniqueError = require("../errors/NotUniqueError");
 const NotEnoughRightsError = require("../errors/NotEnoughRightsError");
 
-module.exports.getUser = async ({ params: { id } }, res, next) => {
-  try {
-    const user = await User.findById(id).orFail(
-      () => new NotFoundError("Пользователь не найден")
-    );
-    res.send({ data: user });
-  } catch (err) {
-    next(err);
-  }
+module.exports.getUser = (req, res, next) => {
+  const { userId } = req.params;
+
+  User.findById(userId)
+    .orFail(new NotFoundError("Пользователь не найден"))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   const { userId } = req.params;
 
-  User.findById(userId)
+  User.findById(req.session.userId)
     .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send(user))
     .catch(next);
