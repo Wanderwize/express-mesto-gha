@@ -39,7 +39,7 @@ userRouter.patch(
   updateAvatar
 );
 
-userRouter.get("/users/me", auth, getCurrentUser);
+userRouter.get("/users/me", auth);
 
 userRouter.get(
   "/users/:userId",
