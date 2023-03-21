@@ -15,14 +15,38 @@ module.exports.deleteCard = (req, res, next) => {
       const owner = card.owner._id.toString();
 
       if (user === owner) {
-        Card.deleteOne(cardId);
-        res.send({ message: "Карточка удалена" });
+        return Card.deleteOne(card).then(() =>
+          res.send({ message: "Карточка удалена" })
+        );
       } else {
         next(new NotEnoughRightsError("Недостаточно прав"));
       }
     })
     .catch(next);
 };
+
+// module.exports.deleteCard = (req, res) => {
+//   Card.findById(req.params.cardId)
+
+//     .then((card) => {
+//       if (!card) {
+//         return res.status(404).send({ message: "Нет карточки с таким id" });
+//       }
+//       if (card.owner._id.toString() !== req.user._id) {
+//         return res.status(403).send({ message: "Необходима авторизация" });
+//       }
+
+//       return Card.deleteOne(card).then(() =>
+//         res.send({ message: "Карточка удалена" })
+//       );
+//     })
+//     .catch((err) => {
+//       if (err.name === "NotFound") {
+//         return res.status(404).send({ message: "Нет карточки с таким id" });
+//       }
+//       return res.status(500).send({ message: "На сервере произошла ошибка" });
+//     });
+// };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
