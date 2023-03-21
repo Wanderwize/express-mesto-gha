@@ -1,23 +1,23 @@
-const express = require("express");
+const express = require('express');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const bodyParser = require("body-parser");
-const { errors } = require("celebrate");
-const { celebrate, Joi } = require("celebrate");
-const NotFoundError = require("./errors/notFoundError");
+const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
+const NotFoundError = require('./errors/notFoundError');
 
-const userRouter = require("./routes/user");
-const { login, createUser } = require("./controllers/user");
-const cardRouter = require("./routes/card");
-const errorHandler = require("./errors/errorHandler");
+const userRouter = require('./routes/user');
+const { login, createUser } = require('./controllers/user');
+const cardRouter = require('./routes/card');
+const errorHandler = require('./errors/errorHandler');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect("mongodb://0.0.0.0:27017/mestodb", {
+mongoose.connect('mongodb://0.0.0.0:27017/mestodb', {
   useNewUrlParser: true,
 
   useUnifiedTopology: true,
@@ -28,17 +28,17 @@ app.use(userRouter);
 app.use(cardRouter);
 
 app.post(
-  "/signin",
+  '/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
       password: Joi.string().required().min(8),
     }),
   }),
-  login
+  login,
 );
 app.post(
-  "/signup",
+  '/signup',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -46,11 +46,11 @@ app.post(
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().pattern(
-        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/
+        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/,
       ),
     }),
   }),
-  createUser
+  createUser,
 );
 
 app.use(errors());
@@ -58,7 +58,7 @@ app.use(errors());
 app.use(errorHandler);
 
 app.use((err, req, res, next) => {
-  next(new NotFoundError("Страница не найдена"));
+  next(new NotFoundError('Страница не найдена'));
 });
 
 app.listen(PORT, () => {
