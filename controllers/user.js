@@ -87,7 +87,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        throw new NotUniqueError("Пользователь уже существует");
+        next(new NotUniqueError("Пользователь уже существует"));
       }
 
       next(new DefaultError("На сервере произошла ошибка2"));
