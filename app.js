@@ -61,7 +61,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(errors());
 
-app.use(errorHandler)
+// app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`Слушаем ${PORT} порт`);
