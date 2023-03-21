@@ -1,30 +1,30 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-const NotFoundError = require('../errors/notFoundError');
-const DefaultError = require('../errors/defaultError');
-const ValidationError = require('../errors/validationError');
-const AuthorizationError = require('../errors/authoriztionError');
-const NotUniqueError = require('../errors/NotUniqueError');
+const NotFoundError = require("../errors/notFoundError");
+const DefaultError = require("../errors/defaultError");
+const ValidationError = require("../errors/validationError");
+const AuthorizationError = require("../errors/authoriztionError");
+const NotUniqueError = require("../errors/NotUniqueError");
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send(user))
     .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send(user))
     .catch(next);
 };
 
-module.exports.getUsers = (res, next) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(next);
@@ -35,15 +35,15 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка валидации');
+      if (err.name === "ValidationError") {
+        throw new ValidationError("Ошибка валидации");
       }
-      throw new DefaultError('На сервере произошла ошибка');
+      throw new DefaultError("На сервере произошла ошибка");
     });
 };
 
-module.exports.errorPage = () => {
-  throw new NotFoundError('Страница не существует');
+module.exports.errorPage = (req, res) => {
+  throw new NotFoundError("Страница не существует");
 };
 
 module.exports.updateProfile = (req, res, next) => {
@@ -51,9 +51,9 @@ module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true, upsert: true },
+    { new: true, runValidators: true, upsert: true }
   )
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send({ data: user }))
     .catch(next);
 };
@@ -64,27 +64,27 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true, upsert: true },
+    { new: true, runValidators: true, upsert: true }
   )
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email,
-  } = req.body;
+  const { name, about, avatar, email } = req.body;
 
   bcrypt
     .hash(req.body.password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
+    .then((hash) =>
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
     .then((user) => {
       res.send({
         email: user.email,
@@ -95,10 +95,10 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new NotUniqueError('Пользователь уже существует'));
+        next(new NotUniqueError("Пользователь уже существует"));
       }
 
-      next(new DefaultError('На сервере произошла ошибка2'));
+      next(new DefaultError("На сервере произошла ошибка2"));
     });
 };
 
@@ -108,12 +108,12 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', {
-          expiresIn: '7d',
+        token: jwt.sign({ _id: user._id }, "super-strong-secret", {
+          expiresIn: "7d",
         }),
       });
     })
-    .catch(() => {
-      next(new AuthorizationError('Неправильные почта или пароль'));
+    .catch((err) => {
+      next(new AuthorizationError("Неправильные почта или пароль"));
     });
 };
