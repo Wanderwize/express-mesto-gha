@@ -58,8 +58,8 @@ app.use(errors());
 
 app.use(errorHandler);
 
-app.use((req, res) => {
-  throw new NotFoundError("Страница не существует");
+app.use((next) => {
+  next(new NotFoundError("Страница не существует"));
 });
 
 app.listen(PORT, () => {
