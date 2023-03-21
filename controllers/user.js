@@ -109,7 +109,8 @@ module.exports.login = (req, res, next) => {
         }),
       });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       next(new AuthorizationError('Неправильные почта или пароль'));
     });
 };
