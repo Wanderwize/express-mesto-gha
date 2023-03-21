@@ -6,41 +6,20 @@ const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   if (userId.length === 24) {
     User.findById(userId)
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError("Нет такого пользователя");
-        }
-        return res.send({ data: user });
-      })
-      .catch((err) => {
-        if (err.name === "CastError") {
-          throw new NotFoundError("Нет такого пользователя");
-        }
-        if (err.name === "ValidationError") {
-          throw new ValidationError("Ошибка валидации");
-        }
-
-        throw new DefaultError("На сервере произошла ошибка");
-      });
-  } else throw new ValidationError("Ошибка валидации");
-
-  return console.log("test");
+      .orFail(new NotFoundError("Пользователь не найден"))
+      .then((user) => res.send(user))
+      .catch(next);
+  }
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        throw new ValidationError("Ошибка валидации");
-      }
-
-      throw new DefaultError("На сервере произошла ошибка");
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res) => {
@@ -59,23 +38,16 @@ module.exports.errorPage = (req, res) => {
   throw new NotFoundError("Страница не существует");
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     { new: true, runValidators: true, upsert: true }
   )
+    .orFail(new NotFoundError("Пользователь не найден"))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        throw new ValidationError("Ошибка валидации");
-      }
-      if (err.name === "CastError") {
-        throw new NotFoundError("Нет такого пользователя");
-      }
-      throw new DefaultError("На сервере произошла ошибка");
-    });
+    .catch(next);
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -86,16 +58,9 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true, upsert: true }
   )
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        throw new ValidationError("Ошибка валидации");
-      }
-      if (err.name === "CastError") {
-        throw new NotFoundError("Нет такого пользователя");
-      }
-      throw new DefaultError("На сервере произошла ошибка");
-    });
+    .orFail(new NotFoundError("Пользователь не найден"))
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {

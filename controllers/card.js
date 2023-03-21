@@ -4,27 +4,23 @@ const DefaultError = require("../errors/defaultError");
 const ValidationError = require("../errors/validationError");
 const AuthorizationError = require("../errors/authoriztionError");
 
-module.exports.deleteCard = (req, res) => {
-  Card.findById(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  const { cardId } = req.params;
 
+  Card.findById(cardId)
+    .orFail(new NotFoundError("Карточка не найдена"))
     .then((card) => {
-      return Card.deleteOne(card).then(() =>
-        res.send({ message: "Карточка удалена" })
-      );
-    })
-    .catch((err) => {
-      if (!card) {
-        throw new NotFoundError("Нет такой карточки");
-      }
-      if (card.owner._id.toString() !== req.user._id) {
-        throw new AuthorizationError("Доступ ограничен");
-      }
+      const user = req.user._id;
+      const owner = card.owner._id.toString();
 
-      if (err.name === "NotFound") {
-        throw new NotFoundError("Нет такой карточки");
+      if (user === owner) {
+        card.remove();
+        res.send({ message: "Карточка удалена" });
+      } else {
+        next(new AuthorizationError("Недостаточно прав"));
       }
-      throw new DefaultError("На сервере произошла ошибка");
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -43,9 +39,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send(card))
-    .catch((err) => {
-      throw new DefaultError("На сервере произошла ошибка");
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res) => {
