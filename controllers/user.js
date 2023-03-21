@@ -122,14 +122,14 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        throw new ValidationError("Ошибка валидации");
+        next(new ValidationError("Ошибка валидации"));
       }
 
       if (err.code === 11000) {
-        throw new DefaultError("На сервере произошла ошибка");
+        next(new DefaultError("На сервере произошла ошибка"));
       }
 
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      next(new DefaultError("На сервере произошла ошибка"));
     });
 };
 
