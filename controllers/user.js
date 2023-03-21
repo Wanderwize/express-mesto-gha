@@ -24,7 +24,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(next);
@@ -40,10 +40,6 @@ module.exports.createUser = (req, res) => {
       }
       throw new DefaultError('На сервере произошла ошибка');
     });
-};
-
-module.exports.errorPage = (req, res, next) => {
-  throw new NotFoundError('Страница не существует');
 };
 
 module.exports.updateProfile = (req, res, next) => {
@@ -113,7 +109,7 @@ module.exports.login = (req, res, next) => {
         }),
       });
     })
-    .catch((err) => {
+    .catch(() => {
       next(new AuthorizationError('Неправильные почта или пароль'));
     });
 };
