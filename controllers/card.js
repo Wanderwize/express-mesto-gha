@@ -6,13 +6,21 @@ const AuthorizationError = require("../errors/authoriztionError");
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const user = req.user._id;
-  const owner = card.owner._id.toString();
-  if (user === owner) {
-    Card.findByIdAndRemove(cardId)
-      .orFail(new NotFoundError("Карточка не найдена"))
-      .then((card) => res.send({ message: "Карточка удалена" }));
-  }
+
+  Card.findById(cardId)
+    .orFail(new NotFoundError("Карточка не найдена"))
+    .then((card) => {
+      const user = req.user._id;
+      const owner = card.owner._id.toString();
+
+      if (user === owner) {
+        Card.findByIdAndRemove(cardId);
+        res.send({ message: "Карточка удалена" });
+      } else {
+        next(new AuthorizationError("Недостаточно прав"));
+      }
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
