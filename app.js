@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
 const NotFoundError = require('./errors/notFoundError');
-
+const regEx = require('./utils/regex');
 const userRouter = require('./routes/user');
 const { login, createUser } = require('./controllers/user');
 const cardRouter = require('./routes/card');
@@ -47,9 +47,7 @@ app.post(
       password: Joi.string().required().min(8),
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(
-        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/,
-      ),
+      avatar: Joi.string().pattern(regEx),
     }),
   }),
   createUser,

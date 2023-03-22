@@ -51,7 +51,6 @@ userSchema.statics.findUserByCredentials = function (email, password) {
             new AuthorizationError('Неправильные почта или пароль'),
           );
         }
-
         return user;
       });
     });

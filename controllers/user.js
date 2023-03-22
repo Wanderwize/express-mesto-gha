@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 const NotFoundError = require('../errors/notFoundError');
 const ValidationError = require('../errors/validationError');
-const AuthorizationError = require('../errors/authoriztionError');
 const NotUniqueError = require('../errors/NotUniqueError');
 
 module.exports.getUser = (req, res, next) => {
@@ -112,10 +111,6 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      next(
-        new AuthorizationError(
-          `${err.statusCode} 'Неправильные почта или пароль'`,
-        ),
-      );
+      next(err);
     });
 };

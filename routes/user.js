@@ -1,6 +1,7 @@
 const userRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const auth = require('../middlewares/auth');
+const regEx = require('../utils/regex');
 
 const {
   getUser,
@@ -29,9 +30,7 @@ userRouter.patch(
   auth,
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().pattern(
-        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/,
-      ),
+      avatar: Joi.string().pattern(regEx),
     }),
   }),
 

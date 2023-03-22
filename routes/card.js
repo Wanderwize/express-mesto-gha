@@ -1,6 +1,7 @@
 const cardRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const auth = require('../middlewares/auth');
+const regEx = require('../utils/regex');
 const {
   getCards,
   deleteCard,
@@ -17,9 +18,7 @@ cardRouter.post(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().pattern(
-        /(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+))(:\d{2,5})?((\/.+)+)?\/?#?/,
-      ),
+      link: Joi.string().required().pattern(regEx),
     }),
   }),
   createCard,
