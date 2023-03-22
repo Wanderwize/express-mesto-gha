@@ -30,7 +30,7 @@ userRouter.patch(
   auth,
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().pattern(regEx),
+      avatar: Joi.string().pattern(regEx.link),
     }),
   }),
 

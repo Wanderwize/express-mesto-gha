@@ -18,7 +18,7 @@ cardRouter.post(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().pattern(regEx),
+      link: Joi.string().required().pattern(regEx.link),
     }),
   }),
   createCard,
@@ -56,11 +56,5 @@ cardRouter.delete(
   }),
   dislikeCard,
 );
-
-// userRouter.get("/:userId", getUser);
-
-// router.get('/users/:userId', (req, res) => {
-//   res.send(users[req.params.id])
-// })
 
 module.exports = cardRouter;

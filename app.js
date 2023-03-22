@@ -47,7 +47,7 @@ app.post(
       password: Joi.string().required().min(8),
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(regEx),
+      avatar: Joi.string().pattern(regEx.link),
     }),
   }),
   createUser,
