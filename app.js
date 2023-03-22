@@ -14,6 +14,8 @@ const { login, createUser } = require('./controllers/user');
 const cardRouter = require('./routes/card');
 const errorHandler = require('./errors/errorHandler');
 
+const auth = require('./middlewares/auth');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -52,14 +54,13 @@ app.post(
   }),
   createUser,
 );
+app.use('*', auth, () => {
+  throw new NotFoundError('Страница не найдена');
+});
 
 app.use(errors());
 
 app.use(errorHandler);
-
-app.use('*', () => {
-  throw new NotFoundError('Страница не найдена');
-});
 
 app.listen(PORT, () => {
   console.log(`Слушаем ${PORT} порт`);

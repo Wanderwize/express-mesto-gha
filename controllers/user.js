@@ -30,28 +30,22 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка валидации');
-      }
-      throw new DefaultError('На сервере произошла ошибка');
-    });
-};
-
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true, upsert: true },
+    { new: true, runValidators: true },
   )
     .orFail(new NotFoundError('Пользователь не найден'))
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -60,11 +54,17 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true, upsert: true },
+    { new: true, runValidators: true },
   )
     .orFail(new NotFoundError('Пользователь не найден'))
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -89,12 +89,15 @@ module.exports.createUser = (req, res, next) => {
         avatar: user.avatar,
       });
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        next(new NotUniqueError('Пользователь уже существует'));
-      }
 
-      next(new DefaultError('На сервере произошла ошибка2'));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Ошибка валидации'));
+      }
+      if (err.code === 11000) {
+        return next(new NotUniqueError('Пользователь уже существует'));
+      }
+      next(err);
     });
 };
 
